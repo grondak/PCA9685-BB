@@ -1,6 +1,12 @@
 # PCA9685-BB
 Simple Code to Allow Beagleboard to control the Adafruit PCA9685
 
+## PCA9685 Info
+This is an LED lighting controller that has been pressed into service to drive servos. I think
+it's a pretty keen idea.
+
+See [PCA9685 datasheet](https://cdn-shop.adafruit.com/datasheets/PCA9685.pdf)  
+
 ## How it works
 1. PCA9685.cpp and .h provide an abstraction over the I2C interface and the PCA9685.
 2. main.cpp creates an instance of PCA9685 and then invokes it.
@@ -25,5 +31,5 @@ This is where I would do fritzing for a later revision of this file.
 ## Run
 `dist/Release/GNU-Linux-x86/sc`
 
-Happy Servo-ing
+Happy Servo-ing  
 grondak

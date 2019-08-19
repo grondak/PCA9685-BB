@@ -1,7 +1,7 @@
 /* 
  * File:   PCA9685.cpp
  * Author: tonyreynolds
- * 
+ * see PCA9685 datasheet at https://cdn-shop.adafruit.com/datasheets/PCA9685.pdf  
  * Created on January 1, 2013, 7:39 PM
  */
 
@@ -31,11 +31,20 @@ PCA9685::PCA9685(int adapter_number, int address)
     }
 }
 
-int PCA9685::reset()
+int PCA9685::getMaxServos()
 {
-    writeByte(PCA9685_MODE1, 0x00);
+  return MAXSERVOS; // fixed by the PCA9685
 }
 
+int PCA9685::reset() // per the PCA9685 datasheet, we put Mode Register 1 to 0s
+{
+    return writeByte(PCA9685_MODE1, 0x00);
+}
+
+// manipulates the MODE1 register per the datasheet to
+// 1. put the PCA6885 to sleep
+// 2. set the prescale regiser to the calculated modulation frequency
+// 3. resets the PCA9685 to where the chip was before we called it.
 void PCA9685::setPWMFreq(float freq)
 {
     float prescaleval = 25000000;
@@ -53,14 +62,16 @@ void PCA9685::setPWMFreq(float freq)
     writeByte(PCA9685_MODE1, oldmode);
 }
 
-void PCA9685::setPWM(char num, int on, int off)
+// This controls the PWM timing for the given Servo
+void PCA9685::setPWM(char servo_num, int on, int off)
 {
-    writeByte(LED0_ON_L + 4 * num, on);
-    writeByte(LED0_ON_H + 4 * num, on >> 8);
-    writeByte(LED0_OFF_L + 4 * num, off);
-    writeByte(LED0_OFF_H + 4 * num, off >> 8);
+    writeByte(LED0_ON_L + 4 * servo_num, on);
+    writeByte(LED0_ON_H + 4 * servo_num, on >> 8);
+    writeByte(LED0_OFF_L + 4 * servo_num, off);
+    writeByte(LED0_OFF_H + 4 * servo_num, off >> 8);
 }
 
+// Low-level routine to set a PCA9685 register to a given value
 int PCA9685::writeByte(char reg, char value)
 {
     char buff[2];
@@ -74,7 +85,7 @@ int PCA9685::writeByte(char reg, char value)
     }
     return errno;
 }
-
+// Low-level routine to read a specific PCA9685 register
 char PCA9685::readByte(char reg)
 {
     char buffer;
@@ -99,6 +110,7 @@ char PCA9685::readByte(char reg)
     return buffer;
 }
 
+// destructor closes the open file on the I2C device
 PCA9685::~PCA9685()
 {
     close(_PCA9685file);
